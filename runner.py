@@ -138,10 +138,13 @@ def train():
 
                     format_str = ('%s: step %d, accuracy = %.2f, loss = %.2f (%1.f examples/sec; %.3f sec/batch)')
                     print(format_str % (
-                    datetime.now(), self._step, accuracy_value, loss_value, examples_per_sec, sec_per_batch))
+                        datetime.now(), self._step, accuracy_value, loss_value, examples_per_sec, sec_per_batch))
 
         conf = tf.ConfigProto(log_device_placement=FLAGS.log_device_placement, allow_soft_placement=True,
                               intra_op_parallelism_threads=8)
+
+        # TODO GPU 메모리 정하는거
+        # conf.gpu_options.per_process_gpu_memory_fraction = 0.4
 
         with tf.train.MonitoredTrainingSession(
                 checkpoint_dir=FLAGS.ckpt,
@@ -455,7 +458,7 @@ def export():
                               output_graph=output_path, clear_devices=True, initializer_nodes="")
 
     input_graph_def = tf.GraphDef()
-    with tf.gfile.Open(output_path, "r") as f:
+    with tf.gfile.Open(output_path, "rb") as f:
         data = f.read()
         input_graph_def.ParseFromString(data)
 
@@ -723,8 +726,12 @@ def main(argv=None):
 
         # WRITE META-DATA
         FLAGS.num_of_classes = _num_of_folders(FLAGS.data_dir)
+        mydict = {}
+        for k in FLAGS:
+            v = FLAGS[k].value
+            mydict[k] = v
         with open(os.path.join(FLAGS.ckpt, "flags.txt"), "w") as text_file:
-            flags = json.dumps(FLAGS.__dict__["__flags"])
+            flags = json.dumps(mydict)
             text_file.write(flags)
 
         train()

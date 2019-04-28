@@ -221,3 +221,14 @@ dmypy.json
 .history
 
 # End of https://www.gitignore.io/api/python,pycharm,visualstudiocode
+ja/
+.idea/
+ja_0419/
+ja_0423/
+ja_0423_2/
+ja_0424/
+mo/
+mo_0420/
+mo_0423/
+mo_0424/
+num/
